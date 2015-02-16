@@ -16,7 +16,7 @@ class SynoFileHostingUPTOBOX {
 	}
 
 	public function Verify($ClearCookie) {
-		return $this->performLogin();
+		return $this->performLogin($ClearCookie);
 	}
 
 	public function GetDownloadInfo() {
@@ -29,7 +29,7 @@ class SynoFileHostingUPTOBOX {
 		return $ret;
 	}
 
-	private function performLogin() {
+	private function performLogin($ClearCookie) {
 		$ret = LOGIN_FAIL;
 		//Save cookie file
 		//op=login&redirect=http%3A%2F%2Fuptobox.com%2F&login=&password=&x=32&y=11
@@ -57,14 +57,15 @@ class SynoFileHostingUPTOBOX {
 			$cookieData = file_get_contents ($this->UPTO_COOKIE_JAR);
 			if(strpos($cookieData,'xfss') !== false) {
 				$ret = USER_IS_PREMIUM;
-				return $ret;
 			} else {
 				$ret = LOGIN_FAIL;
-				return $ret;
 			}
+		}else{
+			$ret = LOGIN_FAIL;	
 		}
-		
-		$ret = LOGIN_FAIL;
+		if ($ClearCookie && file_exists($this->UPTO_COOKIE_JAR)) {
+			unlink($this->UPTO_COOKIE_JAR);
+		}
 		return $ret;
 	}
 	private function getPremiumDownloadLink() {
